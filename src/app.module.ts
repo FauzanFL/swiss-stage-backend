@@ -7,9 +7,18 @@ import { RoundModule } from './round/round.module';
 import { MatchModule } from './match/match.module';
 import { PairingModule } from './pairing/pairing.module';
 import { StandingsModule } from './standings/standings.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TournamentModule, ParticipantModule, RoundModule, MatchModule, PairingModule, StandingsModule],
+  imports: [
+    TournamentModule,
+    ParticipantModule,
+    RoundModule,
+    MatchModule,
+    PairingModule,
+    StandingsModule,
+    ConfigModule.forRoot(),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

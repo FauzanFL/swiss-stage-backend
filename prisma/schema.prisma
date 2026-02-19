@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model Tournament {
+  id            Int           @id @default(autoincrement())
+  name          String
+  totalRounds   Int
+  status        String        @default("pending")
+  createdAt     DateTime      @default(now())
+
+  participants  Participant[]
+  rounds        Round[]
+
+  @@map("tournaments")
+}
+
+model Participant {
+  id           Int        @id @default(autoincrement())
+  name         String
+  seed         Int?
+  rating       Int?
+
+  tournamentId Int
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+
+  score Float @default(0)
+  wins Int @default(0)
+  losses Int @default(0)
+  draws Int @default(0)
+
+  buchholz Float @default(0)
+  omw Float @default(0)
+  rank Int?
+
+  player1Matches Match[] @relation("player1")
+  player2Matches Match[] @relation("player2")
+  winsMatches    Match[] @relation("winner")
+
+  createdAt DateTime @default(now())
+
+  @@unique([tournamentId, name])
+  @@index([tournamentId])
+
+  @@map("participants")
+}
+
+model Round {
+  id           Int        @id @default(autoincrement())
+  roundNumber  Int
+  status       String     @default("pending")
+
+  tournamentId Int
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+
+  matches      Match[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([tournamentId, roundNumber])
+
+  @@map("rounds")
+}
+
+model Match {
+  id          Int   @id @default(autoincrement())
+
+  roundId Int
+  round   Round @relation(fields: [roundId], references: [id])
+
+  player1Id Int
+  player1   Participant @relation("player1", fields: [player1Id], references: [id])
+
+  player2Id Int?
+  player2   Participant? @relation("player2", fields: [player2Id], references: [id])
+
+  winnerId Int?
+  winner   Participant? @relation("winner", fields: [winnerId], references: [id])
+
+  result String?
+
+  @@index([roundId])
+  @@index([player1Id])
+  @@index([player2Id])
+
+  @@map("matches")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  username String @unique
+  password String
+  email String  @unique
+  name  String?
+
+  @@map("users")
+}
