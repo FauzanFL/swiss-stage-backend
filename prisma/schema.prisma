@@ -105,5 +105,18 @@ model User {
   email String  @unique
   name  String?
 
+  refreshTokens RefreshToken[] @relation("user")
+
   @@map("users")
+}
+
+model RefreshToken {
+  id        Int @id @default(autoincrement())
+  token     String @unique
+  userId    Int
+  user User @relation("user",fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("refresh_tokens")
 }

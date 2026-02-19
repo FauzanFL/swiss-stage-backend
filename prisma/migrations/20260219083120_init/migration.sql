@@ -1,46 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Match` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Participant` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Round` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Tournament` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_player1Id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_player2Id_fkey";
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_roundId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Match" DROP CONSTRAINT "Match_winnerId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Participant" DROP CONSTRAINT "Participant_tournamentId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Round" DROP CONSTRAINT "Round_tournamentId_fkey";
-
--- DropTable
-DROP TABLE "Match";
-
--- DropTable
-DROP TABLE "Participant";
-
--- DropTable
-DROP TABLE "Round";
-
--- DropTable
-DROP TABLE "Tournament";
-
--- DropTable
-DROP TABLE "User";
-
 -- CreateTable
 CREATE TABLE "tournaments" (
     "id" SERIAL NOT NULL,
@@ -105,6 +62,17 @@ CREATE TABLE "users" (
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "refresh_tokens" (
+    "id" SERIAL NOT NULL,
+    "token" TEXT NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "refresh_tokens_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE INDEX "participants_tournamentId_idx" ON "participants"("tournamentId");
 
@@ -129,6 +97,9 @@ CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "refresh_tokens_token_key" ON "refresh_tokens"("token");
+
 -- AddForeignKey
 ALTER TABLE "participants" ADD CONSTRAINT "participants_tournamentId_fkey" FOREIGN KEY ("tournamentId") REFERENCES "tournaments"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -146,3 +117,6 @@ ALTER TABLE "matches" ADD CONSTRAINT "matches_player2Id_fkey" FOREIGN KEY ("play
 
 -- AddForeignKey
 ALTER TABLE "matches" ADD CONSTRAINT "matches_winnerId_fkey" FOREIGN KEY ("winnerId") REFERENCES "participants"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
