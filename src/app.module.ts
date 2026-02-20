@@ -12,6 +12,7 @@ import { UserService } from './user/user.service';
 import { DatabaseService } from './database/database.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -24,6 +25,12 @@ import { AuthController } from './auth/auth.controller';
     ConfigModule.forRoot(),
   ],
   controllers: [AppController, AuthController],
-  providers: [AppService, UserService, DatabaseService, AuthService],
+  providers: [
+    AppService,
+    UserService,
+    DatabaseService,
+    AuthService,
+    JwtService,
+  ],
 })
 export class AppModule {}

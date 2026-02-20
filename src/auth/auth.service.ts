@@ -12,7 +12,7 @@ export class AuthService {
     private databaseService: DatabaseService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
+  async validateUser(username: string, password: string) {
     const user = await this.userService.findByUsername(username);
 
     if (!user) return null;
@@ -65,5 +65,18 @@ export class AuthService {
     const payload = this.jwtService.verify(token);
 
     return this.generateTokens({ id: payload.sub });
+  }
+
+  async checkSessionLimit(userId: number) {
+    const sessions = await this.databaseService.refreshToken.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (sessions.length >= 5) {
+      await this.databaseService.refreshToken.delete({
+        where: { id: sessions[0].id },
+      });
+    }
   }
 }
